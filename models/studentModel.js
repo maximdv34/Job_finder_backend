@@ -55,11 +55,13 @@ const studentSchema = new mongoose.Schema(
         message: ''
       }
     }, 
-    patenteMuletto: Boolean,
     disponibilitàAlTrasferimento: Boolean,
     disponibilitàALavoroSuTurni: Boolean,
     TitoloDiStudio: String,
-    AltraFormazione: String 
+    AltraFormazione: String,
+    // TODO: this doesn't work correct
+    tecniche: [{type: mongoose.Schema.Types.ObjectId, ref: "technicalSkills"}],
+    trasversali: [{type: mongoose.Schema.Types.ObjectId, ref: "softSkills"}],
   }
 )
 
