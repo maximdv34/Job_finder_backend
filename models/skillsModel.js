@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 
-const TechnicalSkillsSchema = new mongoose.Schema({
+const TechnicalSkillSchema = new mongoose.Schema({
     nome: { 
-        type: [String],
+        type: String,
+        required: [true, 'Un competenze tecniche deve avere un nome'],
+        /*
         enum: {
             values: [
                 'Disegno meccanico (Conoscenza e capacità di lettura)',
@@ -13,12 +15,15 @@ const TechnicalSkillsSchema = new mongoose.Schema({
                 ],
             message: ''
         }
+        */
     },
 });
 
-const SoftSkillsSchema = new mongoose.Schema({
+const SoftSkillSchema = new mongoose.Schema({
     nome: {
-        type: [String],
+        type: String,
+        required: [true, 'Un competenze trasversali deve avere un nome'],
+        /*
         enum: {
             values: [
                 'Competenze organizzative',
@@ -31,9 +36,9 @@ const SoftSkillsSchema = new mongoose.Schema({
                 ],
             message: ''
         }
+        */
     }
 });
 
-const TechnicalSkills = mongoose.model('technicalSkills', TechnicalSkillsSchema);
-const SolftSkills = mongoose.model('softSkills', SoftSkillsSchema);
-module.exports = TechnicalSkills, SolftSkills;
+exports.TechnicalSkill = mongoose.model('technicalSkill', TechnicalSkillSchema);
+exports.SoftSkill = mongoose.model('softSkill', SoftSkillSchema);

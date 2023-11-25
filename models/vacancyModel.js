@@ -21,9 +21,8 @@ const vacancySchema = new mongoose.Schema({
         type: String,
         required: [true, 'Un\'azienda deve avere un professione'],
     },
-    // TODO: this doesn't work correct
-    tecniche: [{type: mongoose.Schema.Types.ObjectId, ref: "technicalSkills"}],
-    trasversali: [{type: mongoose.Schema.Types.ObjectId, ref: "softSkills"}],
+    tecniche: [{type: mongoose.Schema.Types.ObjectId, ref: "technicalSkill"}],
+    trasversali: [{type: mongoose.Schema.Types.ObjectId, ref: "softSkill"}],
 });
 
 const Vacancy = mongoose.model('vacancy', vacancySchema);

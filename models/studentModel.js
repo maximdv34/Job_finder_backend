@@ -59,9 +59,8 @@ const studentSchema = new mongoose.Schema(
     disponibilitàALavoroSuTurni: Boolean,
     TitoloDiStudio: String,
     AltraFormazione: String,
-    // TODO: this doesn't work correct
-    tecniche: [{type: mongoose.Schema.Types.ObjectId, ref: "technicalSkills"}],
-    trasversali: [{type: mongoose.Schema.Types.ObjectId, ref: "softSkills"}],
+    tecniche: [{type: mongoose.Schema.Types.ObjectId, ref: "technicalSkill"}],
+    trasversali: [{type: mongoose.Schema.Types.ObjectId, ref: "softSkill"}],
   }
 )
 
