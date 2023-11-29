@@ -35,13 +35,24 @@ exports.getAllStudents = async (req, res) => {
       if (isValid) {
         return {
           nome: student.nome,
-          indirizzio: student.indirizzio,
-          mail: student.mail,
+          cognome: student.cognome,
+          dataDiNascita: student.dataDiNascita,
+          nazioneDiNascita: student.nazioneDiNascita,
+          cittadinanza: student.cittadinanza,
+          cittàDiResidenza: student.cittàDiResidenza,
+          via: student.via,
           telefono: student.telefono,
-          professione: student.professione,
+          mail: student.mail,
+          sitoWeb: student.sitoWeb,
+          linguaMadre: student.linguaMadre,
+          patente: student.patente,
+          disponibilitàAlTrasferimento: student.disponibilitàAlTrasferimento,
+          disponibilitàALavoroSuTurni: student.disponibilitàALavoroSuTurni,
+          TitoloDiStudio: student.TitoloDiStudio,
+          AltraFormazione: student.AltraFormazione,      
           tecniche: tecniche,
           trasversali: trasversali
-        }
+      }
       }
     }).filter(function (el) {
       return el != null;
