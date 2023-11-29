@@ -15,32 +15,42 @@ exports.getAllStudents = async (req, res) => {
     const findTechnicalSkills = await Promise.all(students.map((i) => TechnicalSkill.find({ _id: { $in: i.tecniche }})));
     const findSoftSkills = await Promise.all(students.map((i) => SoftSkill.find({ _id: { $in: i.trasversali }})));
     const response = students.map((student, i) => {
-      return {
-        nome: student.nome,
-        cognome: student.cognome,
-        dataDiNascita: student.dataDiNascita,
-        nazioneDiNascita: student.nazioneDiNascita,
-        cittadinanza: student.cittadinanza,
-        cittàDiResidenza: student.cittàDiResidenza,
-        via: student.via,
-        telefono: student.telefono,
-        mail: student.mail,
-        sitoWeb: student.sitoWeb,
-        linguaMadre: student.linguaMadre,
-        patente: student.patente,
-        disponibilitàAlTrasferimento: student.disponibilitàAlTrasferimento,
-        disponibilitàALavoroSuTurni: student.disponibilitàALavoroSuTurni,
-        TitoloDiStudio: student.TitoloDiStudio,
-        AltraFormazione: student.AltraFormazione,
-        tecniche: findTechnicalSkills[i].map((s)=>s.nome),
-        trasversali: findSoftSkills[i].map((s)=>s.nome)
+      tecniche = findTechnicalSkills[i].map((s)=>s.nome);
+      trasversali = findSoftSkills[i].map((s)=>s.nome);
+      isValid = false;
+      if (req.query.tecniche || req.query.trasversali) {
+        if (req.query.tecniche && req.query.trasversali) {
+          if (trasversali.includes(req.query.trasversali) &&
+              tecniche.includes(req.query.tecniche)) {
+              isValid = true;
+            }
+        } else if (trasversali.includes(req.query.trasversali)) {
+          isValid = true;
+        } else if (tecniche.includes(req.query.tecniche)) {
+          isValid = true;
+        }
+      } else {
+        isValid = true;
       }
+      if (isValid) {
+        return {
+          nome: student.nome,
+          indirizzio: student.indirizzio,
+          mail: student.mail,
+          telefono: student.telefono,
+          professione: student.professione,
+          tecniche: tecniche,
+          trasversali: trasversali
+        }
+      }
+    }).filter(function (el) {
+      return el != null;
     });
 
     // SEND RESPONSE
     res.status(200).json({
       status: 'success',
-      results: students.length,
+      results: response.length,
       data: {
         students: response
       }

@@ -11,25 +11,46 @@ exports.getAllVacancies = async (req, res) => {
       .limitFields()
       .paginate();
     const vacancies = await features.query;
-
+    
     const findTechnicalSkills = await Promise.all(vacancies.map((i) => TechnicalSkill.find({ _id: { $in: i.tecniche }})));
     const findSoftSkills = await Promise.all(vacancies.map((i) => SoftSkill.find({ _id: { $in: i.trasversali }})));
     const response = vacancies.map((vacancy, i) => {
-      return {
-        nome: vacancy.nome,
-        indirizzio: vacancy.indirizzio,
-        mail: vacancy.mail,
-        telefono: vacancy.telefono,
-        professione: vacancy.professione,
-        tecniche: findTechnicalSkills[i].map((s)=>s.nome),
-        trasversali: findSoftSkills[i].map((s)=>s.nome)
+      tecniche = findTechnicalSkills[i].map((s)=>s.nome);
+      trasversali = findSoftSkills[i].map((s)=>s.nome);
+      isValid = false;
+      if (req.query.tecniche || req.query.trasversali) {
+        if (req.query.tecniche && req.query.trasversali) {
+          if (trasversali.includes(req.query.trasversali) &&
+              tecniche.includes(req.query.tecniche)) {
+              isValid = true;
+            }
+        } else if (trasversali.includes(req.query.trasversali)) {
+          isValid = true;
+        } else if (tecniche.includes(req.query.tecniche)) {
+          isValid = true;
+        }
+      } else {
+        isValid = true;
       }
+      if (isValid) {
+        return {
+          nome: vacancy.nome,
+          indirizzio: vacancy.indirizzio,
+          mail: vacancy.mail,
+          telefono: vacancy.telefono,
+          professione: vacancy.professione,
+          tecniche: tecniche,
+          trasversali: trasversali
+        }
+      }
+    }).filter(function (el) {
+      return el != null;
     });
 
     // SEND RESPONSE
     res.status(200).json({
       status: 'success',
-      results: vacancies.length,
+      results: response.length,
       data: {
         vacancies: response
       }
@@ -38,7 +59,7 @@ exports.getAllVacancies = async (req, res) => {
     res.status(404).json({
       status: 'fail',
       message: err
-    });
+    })
   }
 };
 
