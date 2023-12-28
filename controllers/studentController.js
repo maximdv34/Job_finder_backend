@@ -12,6 +12,7 @@ exports.getAllStudents = async (req, res) => {
       .limitFields()
       .paginate();
     const students = await features.query;
+
     const findTechnicalSkills = await Promise.all(students.map((i) => TechnicalSkill.find({ _id: { $in: i.tecniche }})));
     const findSoftSkills = await Promise.all(students.map((i) => SoftSkill.find({ _id: { $in: i.trasversali }})));
     const response = students.map((student, i) => {
@@ -33,26 +34,10 @@ exports.getAllStudents = async (req, res) => {
         isValid = true;
       }
       if (isValid) {
-        return {
-          nome: student.nome,
-          cognome: student.cognome,
-          dataDiNascita: student.dataDiNascita,
-          nazioneDiNascita: student.nazioneDiNascita,
-          cittadinanza: student.cittadinanza,
-          cittàDiResidenza: student.cittàDiResidenza,
-          via: student.via,
-          telefono: student.telefono,
-          mail: student.mail,
-          sitoWeb: student.sitoWeb,
-          linguaMadre: student.linguaMadre,
-          patente: student.patente,
-          disponibilitàAlTrasferimento: student.disponibilitàAlTrasferimento,
-          disponibilitàALavoroSuTurni: student.disponibilitàALavoroSuTurni,
-          TitoloDiStudio: student.TitoloDiStudio,
-          AltraFormazione: student.AltraFormazione,      
+        return Object.assign(student.toObject(), {    
           tecniche: tecniche,
           trasversali: trasversali
-      }
+      })
       }
     }).filter(function (el) {
       return el != null;
@@ -81,26 +66,11 @@ exports.getStudent = async (req, res) => {
     const findSoftSkill = await SoftSkill.find({ _id: { $in: student.trasversali }});
     res.status(200).json({
       status: 'success',
-      data: {
-        nome: student.nome,
-        cognome: student.cognome,
-        dataDiNascita: student.dataDiNascita,
-        nazioneDiNascita: student.nazioneDiNascita,
-        cittadinanza: student.cittadinanza,
-        cittàDiResidenza: student.cittàDiResidenza,
-        via: student.via,
-        telefono: student.telefono,
-        mail: student.mail,
-        sitoWeb: student.sitoWeb,
-        linguaMadre: student.linguaMadre,
-        patente: student.patente,
-        disponibilitàAlTrasferimento: student.disponibilitàAlTrasferimento,
-        disponibilitàALavoroSuTurni: student.disponibilitàALavoroSuTurni,
-        TitoloDiStudio: student.TitoloDiStudio,
-        AltraFormazione: student.AltraFormazione,      
-        tecniche: findTechnicalSkill.map((i)=>i._id),
-        trasversali: findSoftSkill.map((i)=>i._id)
-    }
+      data: Object.assign(student.toObject(), {      
+        tecniche: findTechnicalSkill.map((i)=>i.nome),
+        trasversali: findSoftSkill.map((i)=>i.nome),
+        
+    })
     });
   } catch (err) {
     res.status(404).json({
@@ -114,26 +84,10 @@ exports.createStudent = async (req, res) => {
   try {
     const findTechnicalSkills = await TechnicalSkill.find({ nome: { $in: req.body.tecniche }});
     const findSoftSkills = await SoftSkill.find({ nome: { $in: req.body.trasversali }});
-    const newStudent = await Student.create({
-        nome: req.body.nome,
-        cognome: req.body.cognome,
-        dataDiNascita: req.body.dataDiNascita,
-        nazioneDiNascita: req.body.nazioneDiNascita,
-        cittadinanza: req.body.cittadinanza,
-        cittàDiResidenza: req.body.cittàDiResidenza,
-        via: req.body.via,
-        telefono: req.body.telefono,
-        mail: req.body.mail,
-        sitoWeb: req.body.sitoWeb,
-        linguaMadre: req.body.linguaMadre,
-        patente: req.body.patente,
-        disponibilitàAlTrasferimento: req.body.disponibilitàAlTrasferimento,
-        disponibilitàALavoroSuTurni: req.body.disponibilitàALavoroSuTurni,
-        TitoloDiStudio: req.body.TitoloDiStudio,
-        AltraFormazione: req.body.AltraFormazione,      
+    const newStudent = await Student.create(Object.assign(req.body, {
         tecniche: findTechnicalSkills.map((i)=>i._id),
         trasversali: findSoftSkills.map((i)=>i._id)
-    });
+    }));
 
     res.status(201).json({
       status: 'success',

@@ -33,15 +33,10 @@ exports.getAllVacancies = async (req, res) => {
         isValid = true;
       }
       if (isValid) {
-        return {
-          nome: vacancy.nome,
-          indirizzio: vacancy.indirizzio,
-          mail: vacancy.mail,
-          telefono: vacancy.telefono,
-          professione: vacancy.professione,
+        return Object.assign(vacancy.toObject(), {
           tecniche: tecniche,
           trasversali: trasversali
-        }
+        })
       }
     }).filter(function (el) {
       return el != null;
@@ -70,15 +65,10 @@ exports.getVacancy = async (req, res) => {
     const findSoftSkill = await SoftSkill.find({ _id: { $in: vacancy.trasversali }});
     res.status(200).json({
       status: 'success',
-      data: {
-        nome: vacancy.nome,
-        indirizzio: vacancy.indirizzio,
-        mail: vacancy.mail,
-        telefono: vacancy.telefono,
-        professione: vacancy.professione,
+      data: Object.assign(vacancy.toObject(), {
         tecniche: findTechnicalSkill.map((i)=>i.nome),
         trasversali: findSoftSkill.map((i)=>i.nome)
-      }
+      })
     });
   } catch (err) {
     res.status(404).json({
@@ -92,15 +82,10 @@ exports.createVacancy = async (req, res) => {
   try {
     const findTechnicalSkills = await TechnicalSkill.find({ nome: { $in: req.body.tecniche }});
     const findSoftSkills = await SoftSkill.find({ nome: { $in: req.body.trasversali }});
-    const newVacancy = await Vacancy.create({
-        nome: req.body.nome,
-        indirizzio: req.body.indirizzio,
-        mail: req.body.mail,
-        telefono: req.body.telefono,
-        professione: req.body.professione,
+    const newVacancy = await Vacancy.create(Object.assign(req.body, {
         tecniche: findTechnicalSkills.map((i)=>i._id),
         trasversali: findSoftSkills.map((i)=>i._id)
-    });
+    }));
 
     res.status(201).json({
       status: 'success',
